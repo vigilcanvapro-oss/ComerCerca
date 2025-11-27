@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emprende Tacna - Descubre Negocios Locales</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+</head>
+<body>
+    <!-- Menú de Navegación -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h2>Emprende Tacna</h2>
+            </div>
+            <div class="nav-menu">
+                <a href="#mapa" class="nav-link">Mapa</a>
+                <a href="#agregar-negocio" class="nav-link">Agregar Negocio</a>
+                <div class="dropdown">
+                    <button class="dropbtn">Mi Cuenta</button>
+                    <div class="dropdown-content">
+                        <a href="#" id="perfil-link">Mi Perfil</a>
+                        <a href="#" id="lugares-visitados">Lugares Visitados</a>
+                        <a href="#" id="cerrar-sesion">Cerrar Sesión</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenido Principal -->
+    <main class="main-content">
+        <!-- Sección del Mapa -->
+        <section id="mapa" class="map-section">
+            <h1>Descubre Negocios en Tacna</h1>
+            <p>Explora los emprendimientos y negocios locales en tu ciudad</p>
+            <div id="map"></div>
+        </section>
+
+        <!-- Sección para Agregar Negocio -->
+        <section id="agregar-negocio" class="add-business-section">
+            <h2>¿Tienes un negocio? ¡Agrégalo al mapa!</h2>
+            <form id="business-form" class="business-form">
+                <div class="form-group">
+                    <label for="business-name">Nombre del Negocio:</label>
+                    <input type="text" id="business-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="business-type">Tipo de Negocio:</label>
+                    <select id="business-type" required>
+                        <option value="">Selecciona un tipo</option>
+                        <option value="restaurante">Restaurante</option>
+                        <option value="tienda">Tienda</option>
+                        <option value="servicio">Servicio</option>
+                        <option value="artesania">Artesanía</option>
+                        <option value="otro">Otro</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="business-description">Descripción:</label>
+                    <textarea id="business-description" rows="3" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="business-address">Dirección:</label>
+                    <input type="text" id="business-address" required>
+                </div>
+                <div class="form-group">
+                    <label for="business-phone">Teléfono:</label>
+                    <input type="tel" id="business-phone">
+                </div>
+                <button type="submit" class="submit-btn">Agregar Negocio</button>
+            </form>
+        </section>
+    </main>
+
+    <!-- Modal para información del negocio -->
+    <div id="business-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3 id="modal-business-name"></h3>
+            <p id="modal-business-type"></p>
+            <p id="modal-business-description"></p>
+            <p id="modal-business-address"></p>
+            <p id="modal-business-phone"></p>
+            <button id="mark-visited" class="visited-btn">Marcar como Visitado</button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
