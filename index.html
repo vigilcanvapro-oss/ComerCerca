@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <!-- Header y Navegación -->
@@ -15,14 +16,18 @@
         <nav class="navbar">
             <div class="nav-container">
                 <div class="nav-brand">
-                    <i class="fas fa-map-marker-alt"></i>
+                    <i class="fas fa-map-marked-alt"></i>
                     <h1>Emprende Tacna</h1>
                 </div>
                 
                 <div class="nav-menu">
+                    <a href="#inicio" class="nav-link">
+                        <i class="fas fa-home"></i>
+                        Inicio
+                    </a>
                     <a href="#mapa" class="nav-link">
                         <i class="fas fa-map"></i>
-                        Mapa Interactivo
+                        Mapa
                     </a>
                     <a href="#agregar-negocio" class="nav-link">
                         <i class="fas fa-store"></i>
@@ -60,6 +65,11 @@
                         </div>
                     </div>
                 </div>
+                
+                <!-- Botón menú móvil -->
+                <div class="mobile-menu-btn">
+                    <i class="fas fa-bars"></i>
+                </div>
             </div>
         </nav>
     </header>
@@ -67,13 +77,28 @@
     <!-- Contenido Principal -->
     <main class="main-content">
         <!-- Hero Section -->
-        <section class="hero-section">
+        <section id="inicio" class="hero-section">
+            <div class="hero-background">
+                <div class="hero-overlay"></div>
+            </div>
             <div class="hero-content">
-                <h2 class="hero-title">Impulsando el Comercio Local de Tacna</h2>
-                <p class="hero-description">
-                    Conectamos emprendedores con la comunidad. Descubre los mejores negocios locales 
-                    y promociona tu emprendimiento en nuestra plataforma.
-                </p>
+                <div class="hero-text">
+                    <h1 class="hero-title">Impulsando el Comercio Local de Tacna</h1>
+                    <p class="hero-description">
+                        Conectamos emprendedores con la comunidad. Descubre los mejores negocios locales 
+                        y promociona tu emprendimiento en nuestra plataforma.
+                    </p>
+                    <div class="hero-buttons">
+                        <a href="#mapa" class="btn-primary btn-large">
+                            <i class="fas fa-map-marked-alt"></i>
+                            Explorar Mapa
+                        </a>
+                        <a href="#agregar-negocio" class="btn-outline btn-large">
+                            <i class="fas fa-store"></i>
+                            Registrar Negocio
+                        </a>
+                    </div>
+                </div>
                 <div class="hero-stats">
                     <div class="stat-item">
                         <span class="stat-number" id="businesses-count">0</span>
@@ -83,146 +108,200 @@
                         <span class="stat-number" id="visits-count">0</span>
                         <span class="stat-label">Visitas Realizadas</span>
                     </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="featured-count">0</span>
+                        <span class="stat-label">Negocios Destacados</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección de Beneficios -->
+        <section class="benefits-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>¿Por qué unirte a Emprende Tacna?</h2>
+                    <p>Ventajas de formar parte de nuestra comunidad de emprendedores</p>
+                </div>
+                
+                <div class="benefits-grid">
+                    <div class="benefit-card">
+                        <div class="benefit-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3>Mayor Visibilidad</h3>
+                        <p>Llega a más clientes potenciales que buscan negocios locales en Tacna.</p>
+                    </div>
+                    
+                    <div class="benefit-card">
+                        <div class="benefit-icon">
+                            <i class="fas fa-map-marked-alt"></i>
+                        </div>
+                        <h3>Ubicación Precisa</h3>
+                        <p>Tu negocio aparece en nuestro mapa interactivo para que te encuentren fácilmente.</p>
+                    </div>
+                    
+                    <div class="benefit-card">
+                        <div class="benefit-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h3>Crecimiento Local</h3>
+                        <p>Forma parte del ecosistema emprendedor que fortalece la economía de Tacna.</p>
+                    </div>
+                    
+                    <div class="benefit-card">
+                        <div class="benefit-icon">
+                            <i class="fas fa-award"></i>
+                        </div>
+                        <h3>Reconocimiento</h3>
+                        <p>Destaca entre los negocios locales y gana visibilidad en nuestra plataforma.</p>
+                    </div>
                 </div>
             </div>
         </section>
 
         <!-- Sección del Mapa Interactivo -->
         <section id="mapa" class="map-section">
-            <div class="section-header">
-                <h2>Mapa de Negocios en Tacna</h2>
-                <p>Explora los emprendimientos locales en tu ciudad</p>
-            </div>
-            
-            <div class="map-container">
-                <div class="map-controls">
-                    <div class="filter-group">
-                        <label for="business-filter">Filtrar por categoría:</label>
-                        <select id="business-filter" class="filter-select">
-                            <option value="all">Todos los negocios</option>
-                            <option value="restaurante">Restaurantes</option>
-                            <option value="tienda">Tiendas</option>
-                            <option value="servicio">Servicios</option>
-                            <option value="artesania">Artesanías</option>
-                            <option value="cafe">Cafeterías</option>
-                            <option value="otros">Otros</option>
-                        </select>
-                    </div>
-                    <button id="locate-me" class="location-btn">
-                        <i class="fas fa-location-arrow"></i>
-                        Mi Ubicación
-                    </button>
+            <div class="container">
+                <div class="section-header">
+                    <h2>Mapa de Negocios en Tacna</h2>
+                    <p>Explora los emprendimientos locales en tu ciudad</p>
                 </div>
                 
-                <div id="map" class="main-map"></div>
+                <div class="map-container">
+                    <div class="map-controls">
+                        <div class="filter-group">
+                            <label for="business-filter">Filtrar por categoría:</label>
+                            <select id="business-filter" class="filter-select">
+                                <option value="all">Todos los negocios</option>
+                                <option value="restaurante">Restaurantes</option>
+                                <option value="tienda">Tiendas</option>
+                                <option value="servicio">Servicios</option>
+                                <option value="artesania">Artesanías</option>
+                                <option value="cafe">Cafeterías</option>
+                                <option value="otros">Otros</option>
+                            </select>
+                        </div>
+                        <button id="locate-me" class="location-btn">
+                            <i class="fas fa-location-arrow"></i>
+                            Mi Ubicación
+                        </button>
+                    </div>
+                    
+                    <div id="map" class="main-map"></div>
+                </div>
             </div>
         </section>
 
         <!-- Sección para Agregar Negocio -->
         <section id="agregar-negocio" class="business-form-section">
-            <div class="section-header">
-                <h2>Registra tu Negocio en la Plataforma</h2>
-                <p>Llega a más clientes y forma parte de la comunidad emprendedora de Tacna</p>
-            </div>
-            
-            <form id="business-form" class="business-form">
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="business-name" class="form-label">
-                            <i class="fas fa-store"></i>
-                            Nombre del Negocio *
-                        </label>
-                        <input type="text" id="business-name" class="form-input" required 
-                               placeholder="Ej: Mi Emprendimiento Tacneño">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="business-type" class="form-label">
-                            <i class="fas fa-tags"></i>
-                            Categoría del Negocio *
-                        </label>
-                        <select id="business-type" class="form-select" required>
-                            <option value="">Selecciona una categoría</option>
-                            <option value="restaurante">🍽️ Restaurante</option>
-                            <option value="cafe">☕ Cafetería</option>
-                            <option value="tienda">🛍️ Tienda Retail</option>
-                            <option value="artesania">🎨 Artesanía Local</option>
-                            <option value="servicio">🔧 Servicios</option>
-                            <option value="salud">💊 Salud y Bienestar</option>
-                            <option value="educacion">📚 Educación</option>
-                            <option value="otros">🔷 Otros</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group full-width">
-                        <label for="business-description" class="form-label">
-                            <i class="fas fa-file-alt"></i>
-                            Descripción del Negocio *
-                        </label>
-                        <textarea id="business-description" class="form-textarea" rows="4" required
-                                  placeholder="Describe los productos o servicios que ofreces..."></textarea>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="business-address" class="form-label">
-                            <i class="fas fa-map-marker-alt"></i>
-                            Dirección Comercial *
-                        </label>
-                        <input type="text" id="business-address" class="form-input" required
-                               placeholder="Ej: Av. Bolognesi 123">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="business-phone" class="form-label">
-                            <i class="fas fa-phone"></i>
-                            Teléfono de Contacto
-                        </label>
-                        <input type="tel" id="business-phone" class="form-input"
-                               placeholder="Ej: +51 952 123 456">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="business-hours" class="form-label">
-                            <i class="fas fa-clock"></i>
-                            Horario de Atención
-                        </label>
-                        <input type="text" id="business-hours" class="form-input"
-                               placeholder="Ej: Lun-Vie 9:00-18:00">
-                    </div>
-                    
-                    <div class="form-group full-width">
-                        <label class="form-label">
-                            <i class="fas fa-map-pin"></i>
-                            Ubicación en el Mapa
-                        </label>
-                        <div class="map-preview" id="location-picker">
-                            <p>Arrastra el marcador para ajustar la ubicación exacta</p>
-                            <div id="picker-map"></div>
-                        </div>
-                    </div>
+            <div class="container">
+                <div class="section-header">
+                    <h2>Registra tu Negocio en la Plataforma</h2>
+                    <p>Llega a más clientes y forma parte de la comunidad emprendedora de Tacna</p>
                 </div>
                 
-                <div class="form-actions">
-                    <button type="reset" class="btn-secondary">
-                        <i class="fas fa-undo"></i>
-                        Limpiar Formulario
-                    </button>
-                    <button type="submit" class="btn-primary">
-                        <i class="fas fa-plus-circle"></i>
-                        Registrar Negocio
-                    </button>
-                </div>
-            </form>
+                <form id="business-form" class="business-form">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="business-name" class="form-label">
+                                <i class="fas fa-store"></i>
+                                Nombre del Negocio *
+                            </label>
+                            <input type="text" id="business-name" class="form-input" required 
+                                   placeholder="Ej: Mi Emprendimiento Tacneño">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="business-type" class="form-label">
+                                <i class="fas fa-tags"></i>
+                                Categoría del Negocio *
+                            </label>
+                            <select id="business-type" class="form-select" required>
+                                <option value="">Selecciona una categoría</option>
+                                <option value="restaurante">🍽️ Restaurante</option>
+                                <option value="cafe">☕ Cafetería</option>
+                                <option value="tienda">🛍️ Tienda Retail</option>
+                                <option value="artesania">🎨 Artesanía Local</option>
+                                <option value="servicio">🔧 Servicios</option>
+                                <option value="salud">💊 Salud y Bienestar</option>
+                                <option value="educacion">📚 Educación</option>
+                                <option value="otros">🔷 Otros</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            <label for="business-description" class="form-label">
+                                <i class="fas fa-file-alt"></i>
+                                Descripción del Negocio *
+                            </label>
+                            <textarea id="business-description" class="form-textarea" rows="4" required
+                                      placeholder="Describe los productos o servicios que ofreces..."></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="business-address" class="form-label">
+                                <i class="fas fa-map-marker-alt"></i>
+                                Dirección Comercial *
+                            </label>
+                            <input type="text" id="business-address" class="form-input" required
+                                   placeholder="Ej: Av. Bolognesi 123">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="business-phone" class="form-label">
+                                <i class="fas fa-phone"></i>
+                                Teléfono de Contacto
+                            </label>
+                            <input type="tel" id="business-phone" class="form-input"
+                                   placeholder="Ej: +51 952 123 456">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="business-hours" class="form-label">
+                                <i class="fas fa-clock"></i>
+                                Horario de Atención
+                            </label>
+                            <input type="text" id="business-hours" class="form-input"
+                                   placeholder="Ej: Lun-Vie 9:00-18:00">
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            <label class="form-label">
+                                <i class="fas fa-map-pin"></i>
+                                Ubicación en el Mapa
+                            </label>
+                            <div class="map-preview" id="location-picker">
+                                <p>Arrastra el marcador para ajustar la ubicación exacta</p>
+                                <div id="picker-map"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="reset" class="btn-secondary">
+                            <i class="fas fa-undo"></i>
+                            Limpiar Formulario
+                        </button>
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-plus-circle"></i>
+                            Registrar Negocio
+                        </button>
+                    </div>
+                </form>
+            </div>
         </section>
 
         <!-- Sección de Negocios Destacados -->
         <section id="negocios-destacados" class="featured-section">
-            <div class="section-header">
-                <h2>Negocios Destacados de Tacna</h2>
-                <p>Descubre los emprendimientos más visitados por la comunidad</p>
-            </div>
-            <div id="featured-businesses" class="businesses-grid">
-                <!-- Los negocios destacados se cargarán dinámicamente -->
+            <div class="container">
+                <div class="section-header">
+                    <h2>Negocios Destacados de Tacna</h2>
+                    <p>Descubre los emprendimientos más visitados por la comunidad</p>
+                </div>
+                <div id="featured-businesses" class="businesses-grid">
+                    <!-- Los negocios destacados se cargarán dinámicamente -->
+                </div>
             </div>
         </section>
     </main>
@@ -272,25 +351,48 @@
 
     <!-- Footer -->
     <footer class="footer">
-        <div class="footer-content">
-            <div class="footer-section">
-                <h3>Emprende Tacna</h3>
-                <p>Plataforma dedicada al crecimiento del comercio local y emprendimiento en la región de Tacna.</p>
-            </div>
-            <div class="footer-section">
-                <h4>Contacto</h4>
-                <p><i class="fas fa-envelope"></i> info@emprendetacna.com</p>
-                <p><i class="fas fa-phone"></i> +51 952 123 456</p>
-            </div>
-            <div class="footer-section">
-                <h4>Enlaces Rápidos</h4>
-                <a href="#mapa">Mapa de Negocios</a>
-                <a href="#agregar-negocio">Registrar Negocio</a>
-                <a href="#negocios-destacados">Negocios Destacados</a>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-brand">
+                        <i class="fas fa-map-marked-alt"></i>
+                        <h3>Emprende Tacna</h3>
+                    </div>
+                    <p>Plataforma dedicada al crecimiento del comercio local y emprendimiento en la región de Tacna.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Contacto</h4>
+                    <p><i class="fas fa-envelope"></i> info@emprendetacna.com</p>
+                    <p><i class="fas fa-phone"></i> +51 952 123 456</p>
+                    <p><i class="fas fa-map-marker-alt"></i> Tacna, Perú</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Enlaces Rápidos</h4>
+                    <a href="#inicio">Inicio</a>
+                    <a href="#mapa">Mapa de Negocios</a>
+                    <a href="#agregar-negocio">Registrar Negocio</a>
+                    <a href="#negocios-destacados">Negocios Destacados</a>
+                </div>
+                <div class="footer-section">
+                    <h4>Newsletter</h4>
+                    <p>Suscríbete para recibir novedades sobre emprendimientos en Tacna</p>
+                    <div class="newsletter-form">
+                        <input type="email" placeholder="Tu correo electrónico">
+                        <button type="submit"><i class="fas fa-paper-plane"></i></button>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2024 Emprende Tacna. Todos los derechos reservados.</p>
+            <div class="container">
+                <p>&copy; 2024 Emprende Tacna. Todos los derechos reservados.</p>
+            </div>
         </div>
     </footer>
 
