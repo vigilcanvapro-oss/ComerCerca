@@ -2,6 +2,7 @@
 class EmprendeTacna {
     constructor() {
         this.map = null;
+        this.pickerMap = null;
         this.businesses = JSON.parse(localStorage.getItem('businesses')) || [];
         this.visitedPlaces = JSON.parse(localStorage.getItem('visitedPlaces')) || [];
         this.markers = [];
@@ -16,6 +17,7 @@ class EmprendeTacna {
         this.setupEventListeners();
         this.updateStatistics();
         this.loadFeaturedBusinesses();
+        this.setupMobileMenu();
     }
 
     // Inicialización del mapa
@@ -30,12 +32,6 @@ class EmprendeTacna {
             attribution: '© OpenStreetMap contributors',
             maxZoom: 18
         }).addTo(this.map);
-
-        // Capa satelital opcional
-        L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
-            maxZoom: 20,
-            subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
-        });
 
         // Inicializar mapa para selección de ubicación
         this.initializeLocationPicker();
@@ -56,6 +52,8 @@ class EmprendeTacna {
             const position = marker.getLatLng();
             console.log('Ubicación seleccionada:', position);
         });
+
+        this.pickerMap = pickerMap;
     }
 
     // Cargar negocios en el mapa
@@ -87,22 +85,41 @@ class EmprendeTacna {
 
     getBusinessIcon(type) {
         const iconColors = {
-            'restaurante': 'red',
-            'cafe': 'orange',
-            'tienda': 'blue',
-            'artesania': 'green',
-            'servicio': 'purple',
-            'salud': 'pink',
-            'educacion': 'darkblue',
-            'otros': 'gray'
+            'restaurante': '#e74c3c',
+            'cafe': '#d35400',
+            'tienda': '#3498db',
+            'artesania': '#27ae60',
+            'servicio': '#9b59b6',
+            'salud': '#e84393',
+            'educacion': '#0984e3',
+            'otros': '#636e72'
         };
 
         return L.divIcon({
             className: 'custom-div-icon',
-            html: `<div style="background-color: ${iconColors[type] || 'gray'}" class="marker-pin"></div>`,
-            iconSize: [30, 42],
-            iconAnchor: [15, 42]
+            html: `
+                <div class="marker-pin" style="background-color: ${iconColors[type] || '#636e72'}">
+                    <i class="${this.getBusinessIconClass(type)}"></i>
+                </div>
+            `,
+            iconSize: [40, 40],
+            iconAnchor: [20, 40]
         });
+    }
+
+    getBusinessIconClass(type) {
+        const icons = {
+            'restaurante': 'fas fa-utensils',
+            'cafe': 'fas fa-coffee',
+            'tienda': 'fas fa-shopping-bag',
+            'artesania': 'fas fa-palette',
+            'servicio': 'fas fa-tools',
+            'salud': 'fas fa-heartbeat',
+            'educacion': 'fas fa-graduation-cap',
+            'otros': 'fas fa-store'
+        };
+        
+        return icons[type] || 'fas fa-store';
     }
 
     createBusinessPopup(business) {
@@ -214,6 +231,48 @@ class EmprendeTacna {
 
         // Menú de usuario
         this.setupUserMenu();
+        
+        // Scroll suave para enlaces internos
+        this.setupSmoothScroll();
+    }
+
+    setupSmoothScroll() {
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    }
+
+    setupMobileMenu() {
+        const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+        const navMenu = document.querySelector('.nav-menu');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+            mobileMenuBtn.innerHTML = navMenu.classList.contains('active') 
+                ? '<i class="fas fa-times"></i>' 
+                : '<i class="fas fa-bars"></i>';
+        });
+        
+        // Cerrar menú al hacer clic en un enlace
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                navMenu.classList.remove('active');
+                mobileMenuBtn.innerHTML = '<i class="fas fa-bars"></i>';
+            });
+        });
     }
 
     handleBusinessSubmit() {
@@ -246,6 +305,13 @@ class EmprendeTacna {
         
         document.getElementById('business-form').reset();
         this.showNotification('¡Negocio registrado exitosamente!', 'success');
+        
+        // Desplazarse a la sección de negocios destacados
+        setTimeout(() => {
+            document.getElementById('negocios-destacados').scrollIntoView({
+                behavior: 'smooth'
+            });
+        }, 500);
     }
 
     validateBusinessForm(data) {
@@ -302,10 +368,17 @@ class EmprendeTacna {
                 this.map.setView([userLat, userLng], 15);
                 
                 // Añadir marcador de ubicación del usuario
-                L.marker([userLat, userLng])
-                    .addTo(this.map)
-                    .bindPopup('¡Tu ubicación actual!')
-                    .openPopup();
+                L.marker([userLat, userLng], {
+                    icon: L.divIcon({
+                        className: 'user-location-marker',
+                        html: '<div class="user-location-pin"><i class="fas fa-user"></i></div>',
+                        iconSize: [40, 40],
+                        iconAnchor: [20, 40]
+                    })
+                })
+                .addTo(this.map)
+                .bindPopup('¡Tu ubicación actual!')
+                .openPopup();
                 
                 this.showNotification('Ubicación encontrada correctamente.', 'success');
             },
@@ -380,7 +453,26 @@ class EmprendeTacna {
     }
 
     showMyBusinesses() {
-        this.showNotification('Funcionalidad de mis negocios en desarrollo.', 'info');
+        // Mostrar negocios del usuario actual (simulado)
+        if (this.currentUser) {
+            const userBusinesses = this.businesses.filter(business => 
+                business.owner === this.currentUser.id
+            );
+            
+            if (userBusinesses.length === 0) {
+                this.showNotification('No tienes negocios registrados.', 'info');
+                return;
+            }
+            
+            let message = 'Tus negocios registrados:\n\n';
+            userBusinesses.forEach(business => {
+                message += `• ${business.name} (${this.getBusinessTypeText(business.type)})\n`;
+            });
+            
+            alert(message);
+        } else {
+            this.showNotification('Debes iniciar sesión para ver tus negocios.', 'warning');
+        }
     }
 
     logout() {
@@ -392,6 +484,34 @@ class EmprendeTacna {
     updateStatistics() {
         document.getElementById('businesses-count').textContent = this.businesses.length;
         document.getElementById('visits-count').textContent = this.visitedPlaces.length;
+        
+        // Contar negocios destacados (simulado: los primeros 6 por visitas)
+        const featuredCount = Math.min(this.businesses.length, 6);
+        document.getElementById('featured-count').textContent = featuredCount;
+        
+        // Animación de contadores
+        this.animateCounter('businesses-count', this.businesses.length);
+        this.animateCounter('visits-count', this.visitedPlaces.length);
+        this.animateCounter('featured-count', featuredCount);
+    }
+
+    animateCounter(elementId, targetValue) {
+        const element = document.getElementById(elementId);
+        const currentValue = parseInt(element.textContent);
+        
+        if (currentValue === targetValue) return;
+        
+        const increment = targetValue > currentValue ? 1 : -1;
+        let current = currentValue;
+        
+        const timer = setInterval(() => {
+            current += increment;
+            element.textContent = current;
+            
+            if (current === targetValue) {
+                clearInterval(timer);
+            }
+        }, 30);
     }
 
     // Cargar negocios destacados
@@ -405,8 +525,14 @@ class EmprendeTacna {
 
         if (featured.length === 0) {
             featuredContainer.innerHTML = `
-                <div class="text-center" style="grid-column: 1 / -1;">
-                    <p>No hay negocios registrados todavía. ¡Sé el primero en agregar uno!</p>
+                <div class="text-center" style="grid-column: 1 / -1; padding: 3rem;">
+                    <i class="fas fa-store-slash" style="font-size: 3rem; color: #bdc3c7; margin-bottom: 1rem;"></i>
+                    <h3 style="color: #7f8c8d; margin-bottom: 1rem;">No hay negocios registrados todavía</h3>
+                    <p style="color: #95a5a6;">¡Sé el primero en agregar un negocio a la plataforma!</p>
+                    <a href="#agregar-negocio" class="btn-primary" style="margin-top: 1.5rem;">
+                        <i class="fas fa-plus-circle"></i>
+                        Agregar Primer Negocio
+                    </a>
                 </div>
             `;
             return;
@@ -419,14 +545,16 @@ class EmprendeTacna {
                     <span class="business-type">${this.getBusinessTypeText(business.type)}</span>
                 </div>
                 <div class="business-card-body">
-                    <p>${business.description.substring(0, 100)}...</p>
+                    <p>${business.description.substring(0, 120)}...</p>
                     <div class="business-info">
                         <span><i class="fas fa-map-marker-alt"></i> ${business.address}</span>
                         ${business.hours ? `<span><i class="fas fa-clock"></i> ${business.hours}</span>` : ''}
+                        ${business.phone ? `<span><i class="fas fa-phone"></i> ${business.phone}</span>` : ''}
                     </div>
                 </div>
                 <div class="business-card-actions">
                     <button onclick="app.showBusinessDetails(${business.id})" class="btn-outline">
+                        <i class="fas fa-info-circle"></i>
                         Ver Detalles
                     </button>
                 </div>
@@ -440,24 +568,24 @@ class EmprendeTacna {
         const notification = document.createElement('div');
         notification.className = `notification notification-${type}`;
         notification.innerHTML = `
-            <span>${message}</span>
-            <button onclick="this.parentElement.remove()">&times;</button>
+            <div class="notification-content">
+                <span class="notification-message">${message}</span>
+                <button class="notification-close" onclick="this.parentElement.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
         `;
         
-        // Estilos para la notificación
+        // Añadir estilos
         notification.style.cssText = `
             position: fixed;
             top: 20px;
             right: 20px;
-            padding: 1rem 1.5rem;
             background: ${this.getNotificationColor(type)};
             color: white;
             border-radius: var(--border-radius);
             box-shadow: var(--shadow-lg);
             z-index: 3000;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
             max-width: 400px;
             animation: slideInRight 0.3s ease;
         `;
@@ -487,8 +615,8 @@ class EmprendeTacna {
     }
 }
 
-// Estilos CSS adicionales para notificaciones
-const notificationStyles = `
+// Estilos CSS adicionales para notificaciones y marcadores
+const additionalStyles = `
 @keyframes slideInRight {
     from {
         transform: translateX(100%);
@@ -500,11 +628,18 @@ const notificationStyles = `
     }
 }
 
-.notification button {
+.notification-content {
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.notification-close {
     background: none;
     border: none;
     color: white;
-    font-size: 1.2rem;
     cursor: pointer;
     padding: 0;
     width: 20px;
@@ -512,85 +647,96 @@ const notificationStyles = `
     display: flex;
     align-items: center;
     justify-content: center;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+}
+
+.notification-close:hover {
+    opacity: 1;
 }
 
 .marker-pin {
-    width: 30px;
-    height: 30px;
+    width: 40px;
+    height: 40px;
     border-radius: 50% 50% 50% 0;
     background: var(--primary-color);
     position: absolute;
     transform: rotate(-45deg);
     left: 50%;
     top: 50%;
-    margin: -15px 0 0 -15px;
+    margin: -20px 0 0 -20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 16px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
 }
 
 .marker-pin::after {
     content: '';
-    width: 24px;
-    height: 24px;
-    margin: 3px 0 0 3px;
+    width: 30px;
+    height: 30px;
+    margin: 5px 0 0 5px;
     background: #fff;
     position: absolute;
     border-radius: 50%;
+    z-index: -1;
 }
 
-.business-card {
-    background: var(--white);
-    border-radius: var(--border-radius);
-    padding: 1.5rem;
-    box-shadow: var(--shadow);
-    transition: var(--transition);
+.marker-pin i {
+    transform: rotate(45deg);
 }
 
-.business-card:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-lg);
-}
-
-.business-card-header {
+.user-location-pin {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #3498db;
     display: flex;
-    justify-content: space-between;
-    align-items: start;
-    margin-bottom: 1rem;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 18px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    animation: pulse 2s infinite;
 }
 
-.business-card-header h4 {
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(52, 152, 219, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(52, 152, 219, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(52, 152, 219, 0);
+    }
+}
+
+.business-popup {
+    min-width: 250px;
+}
+
+.business-popup h4 {
+    margin: 0 0 0.5rem 0;
     color: var(--secondary-color);
-    margin: 0;
 }
 
-.business-type {
-    background: var(--primary-color);
-    color: var(--white);
-    padding: 0.25rem 0.5rem;
-    border-radius: 20px;
-    font-size: 0.8rem;
-}
-
-.business-card-body {
-    margin-bottom: 1.5rem;
-}
-
-.business-info {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    margin-top: 1rem;
-    font-size: 0.9rem;
+.business-popup p {
+    margin: 0.5rem 0;
     color: var(--text-light);
 }
 
-.business-card-actions {
-    display: flex;
-    gap: 0.5rem;
+.business-popup button {
+    width: 100%;
+    margin-top: 0.5rem;
 }
 `;
 
 // Añadir estilos al documento
 const styleSheet = document.createElement('style');
-styleSheet.textContent = notificationStyles;
+styleSheet.textContent = additionalStyles;
 document.head.appendChild(styleSheet);
 
 // Inicializar la aplicación cuando el DOM esté listo
